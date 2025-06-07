@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'screens/dashboard.dart';
 import 'screens/admindashboard.dart';
+import 'screens/login_screen.dart';
+import 'screens/onboarding_screen.dart';
 // import 'screens/pegawai_list_page.dart';
 // import 'screens/status_list_page.dart';
 // import 'screens/provinsi_list_page.dart';
@@ -19,9 +21,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: AdminDashboard(),
+      //home: AdminDashboard(), // Tetap gunakan ini sebagai entry point
       routes: {
-        '/admin': (context) => const AdminDashboard(),
+        '/': (context) => const OnboardingScreen(), // KOMENTARI baris ini
+        '/login': (context) => const LoginScreen(),
+        '/dashboard': (context) => DashboardDosen(),
+
+        // '/admin': (context) => const AdminDashboard(),
         // '/pegawai': (context) => const PegawaiListPage(),
         // '/status': (context) => const StatusListPage(),
         // '/provinsi': (context) => ProvinsiListPage(),

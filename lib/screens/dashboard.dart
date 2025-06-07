@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import 'kelas_card.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'kelas_card.dart';
+import 'tanggunganpage.dart';
 
 class DashboardDosen extends StatelessWidget {
+  const DashboardDosen({super.key});
+
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting('id_ID', null);
-
     final today = DateTime.now();
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(130),
+        preferredSize: const Size.fromHeight(160),
         child: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           flexibleSpace: ClipRRect(
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(30),
@@ -30,134 +34,97 @@ class DashboardDosen extends StatelessWidget {
                   end: Alignment.bottomCenter,
                 ),
               ),
-            ),
-          ),
-          title: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Image.asset(
-                  'assets/images/logo_poliban.png',
-                  height: 40,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.image_not_supported, color: Colors.white);
-                  },
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Image.asset(
+                            'assets/images/logo_poliban.png',
+                            height: 40,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.image_not_supported, color: Colors.white);
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'POLITEKNIK NEGERI BANJARMASIN',
+                                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Halo, Jamilatul Azkia Putri',
+                                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.account_circle, color: Colors.white, size: 32),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildNavButton(context, 'Beranda', () {
+                              // tetap di halaman ini
+                            }),
+                            _buildNavButton(context, 'Bimbingan', () {
+                              // Navigator.push(context, MaterialPageRoute(builder: (_) => BimbinganPage()));
+                            }),
+                            _buildNavButton(context, 'Jadwal', () {
+                              // Navigator.push(context, MaterialPageRoute(builder: (_) => JadwalPage()));
+                            }),
+                            _buildNavButton(context, 'Perkuliahan', () {
+                              // Navigator.push(context, MaterialPageRoute(builder: (_) => PerkuliahanPage()));
+                            }),
+                            _buildNavButton(context, 'Laporan', () {
+                              // Navigator.push(context, MaterialPageRoute(builder: (_) => LaporanPage()));
+                            }),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(width: 10),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'POLITEKNIK NEGERI BANJARMASIN',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Halo, Jamilatul Azkia Putri',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          centerTitle: false,
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(Icons.account_circle, color: Colors.white),
             ),
-          ],
-          leading: IconButton(
-            icon: const Icon(Icons.menu, color: Colors.black),
-            onPressed: () {},
           ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+          automaticallyImplyLeading: false,
         ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           const SizedBox(height: 16),
-
-          // Diagram dan Tanggung Jawab Anda
-          // Di dalam ListView children:
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             elevation: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Diagram bulat
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      SizedBox(
-                        height: 100,
-                        width: 100,
-                        child: CircularProgressIndicator(
-                          value: 0.7,
-                          strokeWidth: 10,
-                          backgroundColor: Colors.grey[300],
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                        ),
-                      ),
-                      const Text(
-                        "70%",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(width: 24),
-
-                  // Kolom Tanggung Jawab Anda
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Tanggungan Anda",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: const Text("Realisasi"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: const Text("Presensi"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: const Text("Nilai"),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+            child: ListTile(
+              title: const Text("Tanggungan Anda"),
+              subtitle: const Text("3 tanggungan belum diselesaikan hari ini"),
+              trailing: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TanggunganPage()),
+                  );
+                },
+                child: const Text("Lihat semua"),
               ),
             ),
           ),
-
           const SizedBox(height: 16),
-
-          // Jadwal hari ini
           Card(
             elevation: 2,
             child: ListTile(
@@ -174,8 +141,6 @@ class DashboardDosen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-
-          // Daftar kelas
           JadwalCard(
             namaKelas: 'TEKNIK INFORMATIKA 4E (AXIOO)',
             jam: '08.00 - 10.00',
@@ -229,6 +194,20 @@ class DashboardDosen extends StatelessWidget {
             label: 'Menu',
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNavButton(BuildContext context, String title, VoidCallback onPressed) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.white,
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+        child: Text(title),
       ),
     );
   }

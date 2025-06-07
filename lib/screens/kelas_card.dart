@@ -16,9 +16,43 @@ class JadwalCard extends StatelessWidget {
     required this.ruang,
     required this.pertemuan,
     required this.jenis,
-    this.sksColor = Colors.green,
+    this.sksColor = Colors.white,
     this.kelasSudahDibuka = false,
   }) : super(key: key);
+
+  void _showEndClassDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi'),
+          content: const Text('Apakah Anda yakin ingin mengakhiri kelas?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Batal',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // TODO: tambahkan logika pengakhiran kelas di sini
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Kelas telah diakhiri.')),
+                );
+              },
+              child: const Text(
+                'Akhiri',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +73,7 @@ class JadwalCard extends StatelessWidget {
                   ),
                 ),
                 Chip(
-                  label: const Text("3 SKS", style: TextStyle(color: Colors.white)),
+                  label: const Text("3 SKS", style: TextStyle(color: Colors.black)),
                   backgroundColor: sksColor,
                 ),
               ],
@@ -71,16 +105,19 @@ class JadwalCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: kelasSudahDibuka ? () {} : null,
+                    onPressed: kelasSudahDibuka
+                        ? () => _showEndClassDialog(context)
+                        : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: kelasSudahDibuka ? Colors.blue[700] : Colors.grey,
+                      backgroundColor:
+                          kelasSudahDibuka ? Colors.blue[700] : Colors.grey,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 10), // Kasih padding biar proporsional
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
                     child: const Text(
                       "Akhiri Kelas",
-                      style: TextStyle(fontSize: 12), // Ukuran font lebih kecil
-                      overflow: TextOverflow.ellipsis, // Hindari teks terpotong dua baris
+                      style: TextStyle(fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
