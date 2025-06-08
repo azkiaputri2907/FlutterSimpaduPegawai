@@ -4,17 +4,64 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'kelas_card.dart';
 import 'tanggunganpage.dart';
 
-class DashboardDosen extends StatelessWidget {
-  const DashboardDosen({super.key});
+class DashboardDosen extends StatefulWidget {
+  const DashboardDosen({super.key, required bool isKelasDibuka});
+
+  @override
+  State<DashboardDosen> createState() => _DashboardDosenState();
+}
+
+class _DashboardDosenState extends State<DashboardDosen> {
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting('id_ID', null);
     final today = DateTime.now();
 
+    Widget bodyContent;
+
+    // Konten sesuai index bottom nav
+    switch (_currentIndex) {
+      case 0:
+        bodyContent = ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            const SizedBox(height: 16),
+            Card(
+              elevation: 2,
+              child: ListTile(
+                title: const Text("Jadwal Mengajar Hari Ini"),
+                subtitle: const Text("Anda memiliki 1 jadwal mengajar hari ini"),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.calendar_today, size: 18),
+                    const SizedBox(width: 5),
+                    Text(DateFormat('EEEE, d MMMM yyyy', 'id_ID').format(today)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            JadwalCard(
+              namaKelas: 'TEKNIK INFORMATIKA 4E (AXIOO)',
+              jam: '08.00 - 10.00',
+              ruang: 'Gedung H',
+              pertemuan: '7',
+              jenis: 'Praktikum',
+            ),
+          ],
+        );
+        break;
+      // Bisa buat konten halaman lain kalau perlu
+      default:
+        bodyContent = Center(child: Text('Halaman belum tersedia'));
+    }
+
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(160),
+        preferredSize: const Size.fromHeight(120),
         child: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -77,19 +124,21 @@ class DashboardDosen extends StatelessWidget {
                         child: Row(
                           children: [
                             _buildNavButton(context, 'Beranda', () {
-                              // tetap di halaman ini
+                              setState(() {
+                                _currentIndex = 0;
+                              });
                             }),
                             _buildNavButton(context, 'Bimbingan', () {
-                              // Navigator.push(context, MaterialPageRoute(builder: (_) => BimbinganPage()));
+                              // Tambah navigasi jika ada
                             }),
                             _buildNavButton(context, 'Jadwal', () {
-                              // Navigator.push(context, MaterialPageRoute(builder: (_) => JadwalPage()));
+                              // Tambah navigasi jika ada
                             }),
                             _buildNavButton(context, 'Perkuliahan', () {
-                              // Navigator.push(context, MaterialPageRoute(builder: (_) => PerkuliahanPage()));
+                              // Tambah navigasi jika ada
                             }),
                             _buildNavButton(context, 'Laporan', () {
-                              // Navigator.push(context, MaterialPageRoute(builder: (_) => LaporanPage()));
+                              // Tambah navigasi jika ada
                             }),
                           ],
                         ),
@@ -103,72 +152,26 @@ class DashboardDosen extends StatelessWidget {
           automaticallyImplyLeading: false,
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const SizedBox(height: 16),
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            elevation: 2,
-            child: ListTile(
-              title: const Text("Tanggungan Anda"),
-              subtitle: const Text("3 tanggungan belum diselesaikan hari ini"),
-              trailing: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TanggunganPage()),
-                  );
-                },
-                child: const Text("Lihat semua"),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Card(
-            elevation: 2,
-            child: ListTile(
-              title: const Text("Jadwal Mengajar Hari Ini"),
-              subtitle: const Text("Anda memiliki 3 jadwal mengajar hari ini"),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.calendar_today, size: 18),
-                  const SizedBox(width: 5),
-                  Text(DateFormat('EEEE, d MMMM yyyy', 'id_ID').format(today)),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          JadwalCard(
-            namaKelas: 'TEKNIK INFORMATIKA 4E (AXIOO)',
-            jam: '08.00 - 10.00',
-            ruang: 'Gedung H',
-            pertemuan: '7',
-            jenis: 'Praktikum',
-          ),
-          const SizedBox(height: 16),
-          JadwalCard(
-            namaKelas: 'TEKNIK INFORMATIKA 4A',
-            jam: '10.00 - 12.00',
-            ruang: 'Gedung E',
-            pertemuan: '5',
-            jenis: 'Teori',
-          ),
-          const SizedBox(height: 16),
-          JadwalCard(
-            namaKelas: 'TEKNIK INFORMATIKA 4C',
-            jam: '13.00 - 15.00',
-            ruang: 'Gedung F',
-            pertemuan: '6',
-            jenis: 'Praktikum',
-          ),
-        ],
-      ),
+      body: bodyContent,
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (index) {},
+        currentIndex: _currentIndex,
+        onTap: (index) async {
+          if (index == 1) {
+            // Navigasi ke halaman TanggunganPage, tunggu sampai kembali
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TanggunganPage()),
+            );
+            // Setelah kembali, reset ke Beranda (index 0)
+            setState(() {
+              _currentIndex = 0;
+            });
+          } else {
+            setState(() {
+              _currentIndex = index;
+            });
+          }
+        },
         backgroundColor: const Color(0xFF0A2A56),
         selectedItemColor: Color(0xFF0A2A56),
         unselectedItemColor: Color(0xFF0A2A56),
@@ -179,7 +182,7 @@ class DashboardDosen extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.group),
-            label: 'Jaringan',
+            label: 'Tanggungan',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),

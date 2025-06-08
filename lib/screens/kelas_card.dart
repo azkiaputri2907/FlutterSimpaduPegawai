@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'bukakelaspage.dart'; // pastikan file ini benar dan sudah ada
 
 class JadwalCard extends StatelessWidget {
   final String namaKelas;
@@ -30,23 +31,16 @@ class JadwalCard extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text(
-                'Batal',
-                style: TextStyle(color: Colors.grey),
-              ),
+              child: const Text('Batal', style: TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // TODO: tambahkan logika pengakhiran kelas di sini
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Kelas telah diakhiri.')),
                 );
               },
-              child: const Text(
-                'Akhiri',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: const Text('Akhiri', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -124,7 +118,14 @@ class JadwalCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BukaKelasPage(),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[700],
                       foregroundColor: Colors.white,
