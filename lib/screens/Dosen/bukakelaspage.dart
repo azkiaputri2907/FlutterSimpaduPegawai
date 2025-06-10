@@ -18,7 +18,7 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
   TimeOfDay? _selectedTime;
 
   String? _selectedJenisPertemuan;
-  bool isKelasDibuka = false;
+  bool kelasSudahDibuka = false;
 
   @override
   void initState() {
@@ -162,7 +162,7 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => DashboardDosen(isKelasDibuka: isKelasDibuka),
+                                builder: (_) => DashboardDosen(kelasSudahDibuka: kelasSudahDibuka),
                               ),
                             );
                           },
@@ -177,13 +177,13 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                               context,
                               MaterialPageRoute(
                                   builder: (_) =>
-                                      DashboardDosen(isKelasDibuka: isKelasDibuka)),
+                                      DashboardDosen(kelasSudahDibuka: kelasSudahDibuka)),
                             );
                           }),
-                          _buildNavButton(context, 'Jadwal Perkuliahan', () {}),
-                          _buildNavButton(context, 'Peserta Kelas', () {}),
-                          _buildNavButton(context, 'Presensi Kelas', () {}),
-                          _buildNavButton(context, 'Nilai Perkuliahan', () {}),
+                          _buildNavButton(context, 'Bimbingan', () {}),
+                          _buildNavButton(context, 'Jadwal', () {}),
+                          _buildNavButton(context, 'Perkuliahan', () {}),
+                          _buildNavButton(context, 'Laporan', () {}),
                         ]),
                       )
                     ],
@@ -250,13 +250,13 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       setState(() {
-                        isKelasDibuka = true;
+                        kelasSudahDibuka = true;
                       });
 
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => DashboardDosen(isKelasDibuka: true),
+                          builder: (_) => DashboardDosen (kelasSudahDibuka: true),
                         ),
                       );
                     }
@@ -288,7 +288,7 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                       _selectedDate = null;
                       _selectedTime = null;
                       _selectedJenisPertemuan = null;
-                      isKelasDibuka = false;
+                      kelasSudahDibuka = false;
                     });
                   },
                   style: ElevatedButton.styleFrom(

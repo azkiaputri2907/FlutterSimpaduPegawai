@@ -5,7 +5,9 @@ import 'kelas_card.dart';
 import 'tanggunganpage.dart';
 
 class DashboardDosen extends StatefulWidget {
-  const DashboardDosen({super.key, required bool isKelasDibuka});
+  final bool kelasSudahDibuka;
+
+  const DashboardDosen({super.key, required this.kelasSudahDibuka});
 
   @override
   State<DashboardDosen> createState() => _DashboardDosenState();
@@ -13,6 +15,13 @@ class DashboardDosen extends StatefulWidget {
 
 class _DashboardDosenState extends State<DashboardDosen> {
   int _currentIndex = 0;
+  late bool kelasSudahDibuka;
+
+  @override
+  void initState() {
+    super.initState();
+    kelasSudahDibuka = widget.kelasSudahDibuka;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +30,6 @@ class _DashboardDosenState extends State<DashboardDosen> {
 
     Widget bodyContent;
 
-    // Konten sesuai index bottom nav
     switch (_currentIndex) {
       case 0:
         bodyContent = ListView(
@@ -32,7 +40,11 @@ class _DashboardDosenState extends State<DashboardDosen> {
               elevation: 2,
               child: ListTile(
                 title: const Text("Jadwal Mengajar Hari Ini"),
-                subtitle: const Text("Anda memiliki 1 jadwal mengajar hari ini"),
+                subtitle: Text(
+                  kelasSudahDibuka
+                      ? "Kelas sedang berlangsung"
+                      : "Anda memiliki 1 jadwal mengajar hari ini",
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -50,13 +62,89 @@ class _DashboardDosenState extends State<DashboardDosen> {
               ruang: 'Gedung H',
               pertemuan: '7',
               jenis: 'Praktikum',
+              kelasSudahDibuka: kelasSudahDibuka,
+              onAkhiriKelas: () {
+                setState(() {
+                  kelasSudahDibuka = false;
+                });
+              },
             ),
           ],
         );
         break;
-      // Bisa buat konten halaman lain kalau perlu
+
+      case 1:
+        bodyContent = const SizedBox.shrink(); // TanggunganPage handled by Navigator
+        break;
+
+      case 2:
+        bodyContent = Center(
+          child: ElevatedButton.icon(
+            onPressed: () {
+              setState(() {
+                kelasSudahDibuka = true;
+              });
+            },
+            icon: const Icon(Icons.class_),
+            label: const Text("Buka Kelas"),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              backgroundColor: Colors.blue[900],
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+        );
+        break;
+
+      case 3:
+        bodyContent = Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: const [
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Cari mahasiswa, jadwal, atau kelas...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              Text("Fitur pencarian belum tersedia."),
+            ],
+          ),
+        );
+        break;
+
+      case 4:
+        bodyContent = ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profil Dosen'),
+              subtitle: const Text('Lihat dan ubah informasi pribadi'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Pengaturan'),
+              subtitle: const Text('Ubah preferensi aplikasi'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Keluar'),
+              onTap: () {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+            ),
+          ],
+        );
+        break;
+
       default:
-        bodyContent = Center(child: Text('Halaman belum tersedia'));
+        bodyContent = const Center(child: Text('Halaman belum tersedia'));
     }
 
     return Scaffold(
@@ -128,18 +216,10 @@ class _DashboardDosenState extends State<DashboardDosen> {
                                 _currentIndex = 0;
                               });
                             }),
-                            _buildNavButton(context, 'Bimbingan', () {
-                              // Tambah navigasi jika ada
-                            }),
-                            _buildNavButton(context, 'Jadwal', () {
-                              // Tambah navigasi jika ada
-                            }),
-                            _buildNavButton(context, 'Perkuliahan', () {
-                              // Tambah navigasi jika ada
-                            }),
-                            _buildNavButton(context, 'Laporan', () {
-                              // Tambah navigasi jika ada
-                            }),
+                            _buildNavButton(context, 'Bimbingan', () {}),
+                            _buildNavButton(context, 'Jadwal', () {}),
+                            _buildNavButton(context, 'Perkuliahan', () {}),
+                            _buildNavButton(context, 'Laporan', () {}),
                           ],
                         ),
                       ),
@@ -157,12 +237,10 @@ class _DashboardDosenState extends State<DashboardDosen> {
         currentIndex: _currentIndex,
         onTap: (index) async {
           if (index == 1) {
-            // Navigasi ke halaman TanggunganPage, tunggu sampai kembali
             await Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const TanggunganPage()),
             );
-            // Setelah kembali, reset ke Beranda (index 0)
             setState(() {
               _currentIndex = 0;
             });
@@ -173,8 +251,8 @@ class _DashboardDosenState extends State<DashboardDosen> {
           }
         },
         backgroundColor: const Color(0xFF0A2A56),
-        selectedItemColor: Color(0xFF0A2A56),
-        unselectedItemColor: Color(0xFF0A2A56),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

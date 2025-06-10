@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../model/provinsi.dart';
 
 class ProvinsiService {
-  static const String baseUrl = 'http://192.168.1.45:8000/api'; // Ganti sesuai endpoint API kamu
+  static const String baseUrl = 'https://ti054e02.agussbn.my.id/api/provinsi'; // Ganti sesuai endpoint API kamu
 
   static Future<List<Provinsi>> getAll() async {
     final response = await http.get(Uri.parse('$baseUrl/provinsi'));

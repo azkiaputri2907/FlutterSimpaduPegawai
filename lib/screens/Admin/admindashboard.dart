@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'pegawai_list_page.dart';
 // import 'status_list_page.dart';
-import '../pages/provinsi_list_page.dart';
+import '../../pages/provinsi_list_page.dart';
 // import 'kotakabupaten_list_page.dart';
 
 class AdminDashboard extends StatelessWidget {

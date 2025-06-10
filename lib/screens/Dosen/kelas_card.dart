@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'bukakelaspage.dart'; // pastikan file ini benar dan sudah ada
+import 'bukakelaspage.dart';
 
 class JadwalCard extends StatelessWidget {
   final String namaKelas;
@@ -9,6 +9,7 @@ class JadwalCard extends StatelessWidget {
   final String jenis;
   final Color sksColor;
   final bool kelasSudahDibuka;
+  final VoidCallback? onAkhiriKelas;
 
   const JadwalCard({
     Key? key,
@@ -19,6 +20,7 @@ class JadwalCard extends StatelessWidget {
     required this.jenis,
     this.sksColor = Colors.white,
     this.kelasSudahDibuka = false,
+    this.onAkhiriKelas,
   }) : super(key: key);
 
   void _showEndClassDialog(BuildContext context) {
@@ -36,6 +38,9 @@ class JadwalCard extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                if (onAkhiriKelas != null) {
+                  onAkhiriKelas!();
+                }
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Kelas telah diakhiri.')),
                 );
@@ -67,9 +72,14 @@ class JadwalCard extends StatelessWidget {
                   ),
                 ),
                 Chip(
-                  label: const Text("3 SKS", style: TextStyle(color: Colors.black)),
+                  avatar: const Icon(Icons.menu_book_outlined, color: Colors.black),
+                  label: const Text(
+                    "3 SKS",
+                    style: TextStyle(color: Colors.black),
+                  ),
                   backgroundColor: sksColor,
-                ),
+                )
+
               ],
             ),
             const SizedBox(height: 8),
@@ -104,7 +114,7 @@ class JadwalCard extends StatelessWidget {
                         : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          kelasSudahDibuka ? Colors.blue[700] : Colors.grey,
+                          kelasSudahDibuka ? Colors.red : Colors.grey,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
