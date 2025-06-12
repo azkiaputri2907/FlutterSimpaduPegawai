@@ -18,7 +18,6 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
   TimeOfDay? _selectedTime;
 
   String? _selectedJenisPertemuan;
-  bool kelasSudahDibuka = false;
 
   @override
   void initState() {
@@ -62,7 +61,7 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
   }
 
   Widget _buildTextField(String label,
-      {TextEditingController? controller, bool readOnly = false, VoidCallback? onTap}) {
+      {TextEditingController? controller, bool readOnly = false, VoidCallback? onTap, String? Function(String?)? validator}) {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2 - 24,
       child: TextFormField(
@@ -74,6 +73,7 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
           border: const OutlineInputBorder(),
           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         ),
+        validator: validator,
       ),
     );
   }
@@ -162,7 +162,7 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => DashboardDosen(kelasSudahDibuka: kelasSudahDibuka),
+                                builder: (_) => DashboardDosen(kelasSudahDibuka: false), // Asumsi false saat kembali ke beranda dari sini
                               ),
                             );
                           },
@@ -177,7 +177,7 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                               context,
                               MaterialPageRoute(
                                   builder: (_) =>
-                                      DashboardDosen(kelasSudahDibuka: kelasSudahDibuka)),
+                                      DashboardDosen(kelasSudahDibuka: false)), // Asumsi false saat kembali ke beranda dari sini
                             );
                           }),
                           _buildNavButton(context, 'Bimbingan', () {}),
@@ -229,17 +229,17 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
               spacing: 12,
               runSpacing: 12,
               children: [
-                _buildTextField('Sesi'),
-                _buildTextField('Metode'),
+                _buildTextField('Sesi', validator: (value) => value == null || value.isEmpty ? 'Sesi tidak boleh kosong' : null),
+                _buildTextField('Metode', validator: (value) => value == null || value.isEmpty ? 'Metode tidak boleh kosong' : null),
                 _buildTextField('Tanggal Jadwal',
-                    controller: _tanggalController, readOnly: true, onTap: _pickDate),
-                _buildTextField('Ruang Kuliah'),
+                    controller: _tanggalController, readOnly: true, onTap: _pickDate, validator: (value) => value == null || value.isEmpty ? 'Tanggal tidak boleh kosong' : null),
+                _buildTextField('Ruang Kuliah', validator: (value) => value == null || value.isEmpty ? 'Ruang Kuliah tidak boleh kosong' : null),
                 _buildTextField('Waktu Selesai',
-                    controller: _waktuSelesaiController, readOnly: true, onTap: _pickTime),
+                    controller: _waktuSelesaiController, readOnly: true, onTap: _pickTime, validator: (value) => value == null || value.isEmpty ? 'Waktu Selesai tidak boleh kosong' : null),
                 _buildTextField('Keterangan Ruang Kuliah'),
                 _buildJenisPertemuanDropdown(),
                 _buildTextField('URL Kuliah Online'),
-                _buildTextField('Status'),
+                _buildTextField('Status', validator: (value) => value == null || value.isEmpty ? 'Status tidak boleh kosong' : null),
               ],
             ),
             const SizedBox(height: 24),
@@ -249,16 +249,8 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      setState(() {
-                        kelasSudahDibuka = true;
-                      });
-
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => DashboardDosen (kelasSudahDibuka: true),
-                        ),
-                      );
+                      // Pop dengan hasil `true` untuk menunjukkan kelas berhasil dibuka/disimpan
+                      Navigator.pop(context, true);
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -270,7 +262,9 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Fungsionalitas Edit - placeholder
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
                     foregroundColor: Colors.black,
@@ -281,6 +275,7 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                 const SizedBox(width: 12),
                 ElevatedButton(
                   onPressed: () {
+                    // Hanya mereset form, tidak memengaruhi status kelas yang dibuka
                     _formKey.currentState!.reset();
                     _tanggalController.clear();
                     _waktuSelesaiController.clear();
@@ -288,8 +283,9 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                       _selectedDate = null;
                       _selectedTime = null;
                       _selectedJenisPertemuan = null;
-                      kelasSudahDibuka = false;
                     });
+                    // Tidak ada `Navigator.pop(context, false);` di sini
+                    // sehingga DashboardDosen tidak akan mengubah status `kelasSudahDibuka`
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,

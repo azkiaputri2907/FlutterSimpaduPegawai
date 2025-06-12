@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'bukakelaspage.dart';
+import 'detailkelas.dart';
 
 class JadwalCard extends StatelessWidget {
   final String namaKelas;
@@ -10,6 +10,8 @@ class JadwalCard extends StatelessWidget {
   final Color sksColor;
   final bool kelasSudahDibuka;
   final VoidCallback? onAkhiriKelas;
+  final VoidCallback? onMasukKelas; // New callback for "Masuk Kelas"
+  final VoidCallback? onDetailKelas; // New callback for "Detail Kelas"
 
   const JadwalCard({
     Key? key,
@@ -21,6 +23,8 @@ class JadwalCard extends StatelessWidget {
     this.sksColor = Colors.white,
     this.kelasSudahDibuka = false,
     this.onAkhiriKelas,
+    this.onMasukKelas, // Initialize new callbacks
+    this.onDetailKelas, // Initialize new callbacks
   }) : super(key: key);
 
   void _showEndClassDialog(BuildContext context) {
@@ -39,7 +43,7 @@ class JadwalCard extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
                 if (onAkhiriKelas != null) {
-                  onAkhiriKelas!();
+                  onAkhiriKelas!(); // Call the provided callback
                 }
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Kelas telah diakhiri.')),
@@ -52,6 +56,45 @@ class JadwalCard extends StatelessWidget {
       },
     );
   }
+
+  void _showKelasBerhasilDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Informasi'),
+          content: const Text('Kelas berhasil dibuka.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (onMasukKelas != null) {
+                  onMasukKelas!(); // Call the provided callback to update state
+                }
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // No longer navigating directly here, instead call the callback
+  // void _bukaDetailKelasJikaSudahDibuka(BuildContext context) {
+  //   if (kelasSudahDibuka) {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => const BukaKelasPage(),
+  //       ),
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Silakan buka kelas terlebih dahulu.')),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +122,6 @@ class JadwalCard extends StatelessWidget {
                   ),
                   backgroundColor: sksColor,
                 )
-
               ],
             ),
             const SizedBox(height: 8),
@@ -111,7 +153,7 @@ class JadwalCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: kelasSudahDibuka
                         ? () => _showEndClassDialog(context)
-                        : null,
+                        : null, // Disable if class is not opened
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           kelasSudahDibuka ? Colors.red : Colors.grey,
@@ -128,16 +170,13 @@ class JadwalCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const BukaKelasPage(),
-                        ),
-                      );
-                    },
+                    onPressed: !kelasSudahDibuka // Only enable if class is not already open
+                        ? () => _showKelasBerhasilDialog(context)
+                        : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[700],
+                      backgroundColor: !kelasSudahDibuka
+                          ? Colors.blue[700]
+                          : Colors.grey, // Grey out if already opened
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
@@ -151,9 +190,17 @@ class JadwalCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: kelasSudahDibuka // Only enable if class is opened
+                        ? () {
+                            if (onDetailKelas != null) {
+                              onDetailKelas!(); // Call the provided callback
+                            }
+                          }
+                        : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[700],
+                      backgroundColor: kelasSudahDibuka
+                          ? Colors.blue[700]
+                          : Colors.grey, // Grey out if not opened
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                     ),

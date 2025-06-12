@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'kelas_card.dart';
 import 'tanggunganpage.dart';
+import 'detailkelas.dart'; // Mengimpor BukaKelasPage
 
 class DashboardDosen extends StatefulWidget {
   final bool kelasSudahDibuka;
@@ -15,17 +16,31 @@ class DashboardDosen extends StatefulWidget {
 
 class _DashboardDosenState extends State<DashboardDosen> {
   int _currentIndex = 0;
-  late bool kelasSudahDibuka;
+  late bool _currentKelasSudahDibuka; // Gunakan variabel status yang bisa diubah
 
   @override
   void initState() {
     super.initState();
-    kelasSudahDibuka = widget.kelasSudahDibuka;
+    initializeDateFormatting('id_ID', null);
+    _currentKelasSudahDibuka = widget.kelasSudahDibuka; // Inisialisasi dengan nilai yang diteruskan
+  }
+
+  // Callback untuk memperbarui status kelas
+  void _updateKelasStatus(bool status) {
+    setState(() {
+      _currentKelasSudahDibuka = status;
+    });
+  }
+
+  // Callback untuk memperbarui indeks navigasi bawah
+  void _updateCurrentIndex(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    initializeDateFormatting('id_ID', null);
     final today = DateTime.now();
 
     Widget bodyContent;
@@ -41,7 +56,7 @@ class _DashboardDosenState extends State<DashboardDosen> {
               child: ListTile(
                 title: const Text("Jadwal Mengajar Hari Ini"),
                 subtitle: Text(
-                  kelasSudahDibuka
+                  _currentKelasSudahDibuka
                       ? "Kelas sedang berlangsung"
                       : "Anda memiliki 1 jadwal mengajar hari ini",
                 ),
@@ -50,7 +65,7 @@ class _DashboardDosenState extends State<DashboardDosen> {
                   children: [
                     const Icon(Icons.calendar_today, size: 18),
                     const SizedBox(width: 5),
-                    Text(DateFormat('EEEE, d MMMM yyyy', 'id_ID').format(today)),
+                    Text(DateFormat('EEEE, d MMMM y', 'id_ID').format(today)),
                   ],
                 ),
               ),
@@ -62,11 +77,21 @@ class _DashboardDosenState extends State<DashboardDosen> {
               ruang: 'Gedung H',
               pertemuan: '7',
               jenis: 'Praktikum',
-              kelasSudahDibuka: kelasSudahDibuka,
+              kelasSudahDibuka: _currentKelasSudahDibuka,
               onAkhiriKelas: () {
-                setState(() {
-                  kelasSudahDibuka = false;
-                });
+                _updateKelasStatus(false);
+              },
+              onMasukKelas: () {
+                _updateKelasStatus(true);
+              },
+              onDetailKelas: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const BukaKelasPage()),
+                );
+                if (result != null && result is bool) {
+                  _updateKelasStatus(result);
+                }
               },
             ),
           ],
@@ -74,16 +99,22 @@ class _DashboardDosenState extends State<DashboardDosen> {
         break;
 
       case 1:
-        bodyContent = const SizedBox.shrink(); // TanggunganPage handled by Navigator
+        // Saat tab "Tanggungan" dipilih, halaman TanggunganPage akan di-push sebagai route terpisah.
+        // Oleh karena itu, bodyContent di DashboardDosen ini hanya menampilkan widget kosong.
+        bodyContent = const SizedBox.shrink();
         break;
 
-      case 2:
+      case 2: // Tombol 'Buat' untuk membuka BukaKelasPage
         bodyContent = Center(
           child: ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                kelasSudahDibuka = true;
-              });
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const BukaKelasPage()),
+              );
+              if (result != null && result is bool) {
+                _updateKelasStatus(result);
+              }
             },
             icon: const Icon(Icons.class_),
             label: const Text("Buka Kelas"),
@@ -236,14 +267,18 @@ class _DashboardDosenState extends State<DashboardDosen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) async {
-          if (index == 1) {
+          if (index == 1) { // Navigasi ke TanggunganPage
             await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const TanggunganPage()),
+              MaterialPageRoute(
+                builder: (context) => TanggunganPage(
+                  kelasSudahDibuka: _currentKelasSudahDibuka, // Teruskan status kelas
+                  onTabSelected: _updateCurrentIndex, // Teruskan callback untuk memperbarui indeks
+                ),
+              ),
             );
-            setState(() {
-              _currentIndex = 0;
-            });
+            // Setelah kembali dari TanggunganPage, _currentIndex sudah diupdate
+            // oleh callback onTabSelected, jadi tidak perlu mengatur ulang ke 0.
           } else {
             setState(() {
               _currentIndex = index;
@@ -251,8 +286,8 @@ class _DashboardDosenState extends State<DashboardDosen> {
           }
         },
         backgroundColor: const Color(0xFF0A2A56),
-        selectedItemColor: Color(0xFF0A2A56),
-        unselectedItemColor: Color(0xFF0A2A56),
+        selectedItemColor: Color(0xFF0A2A56), // Warna ikon/label saat dipilih
+        unselectedItemColor: Color(0xFF0A2A56), // Warna ikon/label saat tidak dipilih
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
