@@ -251,8 +251,8 @@ class _DashboardDosenState extends State<DashboardDosen> {
           }
         },
         backgroundColor: const Color(0xFF0A2A56),
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
+        selectedItemColor: Color(0xFF0A2A56),
+        unselectedItemColor: Color(0xFF0A2A56),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
