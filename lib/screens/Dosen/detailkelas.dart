@@ -1,3 +1,5 @@
+import 'package:dashboard/screens/Dosen/peserta.dart';
+import 'package:dashboard/screens/Dosen/presensi.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -18,6 +20,10 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
   TimeOfDay? _selectedTime;
 
   String? _selectedJenisPertemuan;
+
+  // GlobalKey untuk Scaffold, diperlukan untuk mengakses ScaffoldState
+  // Ini penting agar tombol menu bisa memanggil openDrawer()
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -105,6 +111,7 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey, // Menambahkan key ke Scaffold
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(120),
         child: AppBar(
@@ -156,15 +163,11 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
                             ],
                           ),
                         ),
+                        // Tombol menu yang akan membuka Drawer
                         IconButton(
-                          icon: const Icon(Icons.home, color: Colors.white),
+                          icon: const Icon(Icons.menu, color: Colors.white),
                           onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => DashboardDosen(kelasSudahDibuka: false), // Asumsi false saat kembali ke beranda dari sini
-                              ),
-                            );
+                            _scaffoldKey.currentState?.openDrawer(); // Memanggil openDrawer()
                           },
                         )
                       ]),
@@ -192,7 +195,88 @@ class _BukaKelasPageState extends State<BukaKelasPage> {
               ),
             ),
           ),
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: false, // Penting agar tidak ada back button otomatis
+        ),
+      ),
+      // Menambahkan Drawer di sini
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            // Header Drawer
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFF0D47A1),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white,
+                    child: Icon(Icons.person, size: 40, color: Color(0xFF0D47A1)),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Jamilatul Azkia Putri',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
+                  ),
+                  Text(
+                    'Dosen',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.book),
+              title: const Text('Jadwal Perkuliahan'),
+              onTap: () {
+                Navigator.pop(context); // Menutup drawer
+                // Tambahkan navigasi ke halaman Bimbingan
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.group),
+              title: const Text('Peserta Kelas'),
+              onTap: () {
+                Navigator.pop(context); // Menutup drawer
+                // Navigasi ke halaman PesertaKelasPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PesertaKelasPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.event),
+              title: const Text('Presensi Kelas'),
+              onTap: () {
+                Navigator.pop(context); // Menutup drawer
+                // Tambahkan navigasi ke halaman Perkuliahan
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PresensiKelasPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.description),
+              title: const Text('Nilai Perkuliahan'),
+              onTap: () {
+                Navigator.pop(context); // Menutup drawer
+                // Tambahkan navigasi ke halaman Laporan
+              },
+            ),
+            const Divider(), // Garis pemisah
+          ],
         ),
       ),
       body: SingleChildScrollView(
